@@ -31,28 +31,24 @@ public class AnalyticsService {
     private AnalyticsResponse getTeacherDashboardAnalytics(String userId) {
         AnalyticsResponse response = new AnalyticsResponse();
         
-        // Mock data for teacher analytics
+        // TODO: Implement actual analytics data retrieval from database
         Map<String, Object> data = new HashMap<>();
-        data.put("totalQuizzes", 25);
-        data.put("totalStudents", 150);
-        data.put("totalAttempts", 485);
-        data.put("averageScore", 78.5);
-        data.put("activeQuizzes", 12);
-        data.put("completedQuizzes", 13);
+        data.put("totalQuizzes", 0);
+        data.put("totalStudents", 0);
+        data.put("totalAttempts", 0);
+        data.put("averageScore", 0.0);
+        data.put("activeQuizzes", 0);
+        data.put("completedQuizzes", 0);
         
-        // Recent activity
-        List<Map<String, Object>> recentActivity = Arrays.asList(
-            Map.of("type", "quiz_completed", "message", "5 students completed 'Java Basics Quiz'", "timestamp", LocalDateTime.now().minusHours(2)),
-            Map.of("type", "quiz_created", "message", "New quiz 'Spring Boot Fundamentals' created", "timestamp", LocalDateTime.now().minusHours(5)),
-            Map.of("type", "high_score", "message", "Student achieved 95% in 'Database Design Quiz'", "timestamp", LocalDateTime.now().minusHours(8))
-        );
+        // Recent activity - empty for now
+        List<Map<String, Object>> recentActivity = new ArrayList<>();
         data.put("recentActivity", recentActivity);
         
-        // Performance trends
+        // Performance trends - empty for now
         Map<String, Object> trends = new HashMap<>();
-        trends.put("scoreImprovement", 12.3);
-        trends.put("completionRate", 89.2);
-        trends.put("averageTimeSpent", 23.5);
+        trends.put("scoreImprovement", 0.0);
+        trends.put("completionRate", 0.0);
+        trends.put("averageTimeSpent", 0.0);
         data.put("trends", trends);
         
         response.setData(data);
@@ -64,30 +60,22 @@ public class AnalyticsService {
     private AnalyticsResponse getStudentDashboardAnalytics(String userId) {
         AnalyticsResponse response = new AnalyticsResponse();
         
-        // Mock data for student analytics
+        // TODO: Implement actual analytics data retrieval from database
         Map<String, Object> data = new HashMap<>();
-        data.put("quizzesCompleted", 18);
-        data.put("averageScore", 82.3);
-        data.put("totalTimeSpent", 145); // in minutes
-        data.put("bestScore", 96);
-        data.put("currentStreak", 5);
-        data.put("rank", 12);
-        data.put("totalParticipants", 150);
+        data.put("quizzesCompleted", 0);
+        data.put("averageScore", 0.0);
+        data.put("totalTimeSpent", 0); // in minutes
+        data.put("bestScore", 0);
+        data.put("currentStreak", 0);
+        data.put("rank", 0);
+        data.put("totalParticipants", 0);
         
-        // Subject performance
-        List<Map<String, Object>> subjectPerformance = Arrays.asList(
-            Map.of("subject", "Mathematics", "score", 85.2, "quizzes", 8),
-            Map.of("subject", "Science", "score", 79.8, "quizzes", 6),
-            Map.of("subject", "Programming", "score", 88.5, "quizzes", 4)
-        );
+        // Subject performance - empty for now
+        List<Map<String, Object>> subjectPerformance = new ArrayList<>();
         data.put("subjectPerformance", subjectPerformance);
         
-        // Recent scores
-        List<Map<String, Object>> recentScores = Arrays.asList(
-            Map.of("quiz", "Java Advanced Concepts", "score", 92, "date", LocalDateTime.now().minusDays(1)),
-            Map.of("quiz", "Database Optimization", "score", 78, "date", LocalDateTime.now().minusDays(3)),
-            Map.of("quiz", "Web Development Basics", "score", 85, "date", LocalDateTime.now().minusDays(5))
-        );
+        // Recent scores - empty for now
+        List<Map<String, Object>> recentScores = new ArrayList<>();
         data.put("recentScores", recentScores);
         
         response.setData(data);
@@ -99,11 +87,12 @@ public class AnalyticsService {
     private AnalyticsResponse getGeneralAnalytics() {
         AnalyticsResponse response = new AnalyticsResponse();
         
+        // TODO: Implement actual analytics data retrieval from database
         Map<String, Object> data = new HashMap<>();
-        data.put("totalUsers", 350);
-        data.put("totalQuizzes", 125);
-        data.put("totalAttempts", 2890);
-        data.put("averageScore", 76.8);
+        data.put("totalUsers", 0);
+        data.put("totalQuizzes", 0);
+        data.put("totalAttempts", 0);
+        data.put("averageScore", 0.0);
         
         response.setData(data);
         response.setGeneratedAt(LocalDateTime.now());
@@ -114,22 +103,18 @@ public class AnalyticsService {
     public Map<String, Object> getQuizAnalytics(String quizId) {
         log.info("Getting analytics for quiz: {}", quizId);
         
+        // TODO: Implement actual quiz analytics retrieval from database
         Map<String, Object> analytics = new HashMap<>();
         analytics.put("quizId", quizId);
-        analytics.put("totalAttempts", 45);
-        analytics.put("averageScore", 82.3);
-        analytics.put("highestScore", 98);
-        analytics.put("lowestScore", 45);
-        analytics.put("completionRate", 87.5);
-        analytics.put("averageTimeSpent", 18.5);
+        analytics.put("totalAttempts", 0);
+        analytics.put("averageScore", 0.0);
+        analytics.put("highestScore", 0);
+        analytics.put("lowestScore", 0);
+        analytics.put("completionRate", 0.0);
+        analytics.put("averageTimeSpent", 0.0);
         
-        // Score distribution
+        // Score distribution - empty for now
         Map<String, Integer> scoreDistribution = new HashMap<>();
-        scoreDistribution.put("0-20", 2);
-        scoreDistribution.put("21-40", 3);
-        scoreDistribution.put("41-60", 8);
-        scoreDistribution.put("61-80", 15);
-        scoreDistribution.put("81-100", 17);
         analytics.put("scoreDistribution", scoreDistribution);
         
         return analytics;
@@ -138,13 +123,14 @@ public class AnalyticsService {
     public Map<String, Object> getUserAnalytics(String userId) {
         log.info("Getting analytics for user: {}", userId);
         
+        // TODO: Implement actual user analytics retrieval from database
         Map<String, Object> analytics = new HashMap<>();
         analytics.put("userId", userId);
-        analytics.put("quizzesCompleted", 23);
-        analytics.put("averageScore", 84.2);
-        analytics.put("totalTimeSpent", 195);
-        analytics.put("bestSubject", "Programming");
-        analytics.put("improvementRate", 15.3);
+        analytics.put("quizzesCompleted", 0);
+        analytics.put("averageScore", 0.0);
+        analytics.put("totalTimeSpent", 0);
+        analytics.put("bestSubject", "");
+        analytics.put("improvementRate", 0.0);
         
         return analytics;
     }
@@ -152,20 +138,16 @@ public class AnalyticsService {
     public Map<String, Object> getPerformanceAnalytics(String timeRange, String category) {
         log.info("Getting performance analytics for timeRange: {} and category: {}", timeRange, category);
         
+        // TODO: Implement actual performance analytics retrieval from database
         Map<String, Object> analytics = new HashMap<>();
         analytics.put("timeRange", timeRange);
         analytics.put("category", category);
-        analytics.put("totalQuizzes", 85);
-        analytics.put("averageScore", 79.2);
-        analytics.put("participationRate", 92.1);
+        analytics.put("totalQuizzes", 0);
+        analytics.put("averageScore", 0.0);
+        analytics.put("participationRate", 0.0);
         
-        // Performance over time
-        List<Map<String, Object>> performanceOverTime = Arrays.asList(
-            Map.of("period", "Week 1", "averageScore", 76.2, "attempts", 120),
-            Map.of("period", "Week 2", "averageScore", 78.5, "attempts", 135),
-            Map.of("period", "Week 3", "averageScore", 81.3, "attempts", 148),
-            Map.of("period", "Week 4", "averageScore", 79.8, "attempts", 142)
-        );
+        // Performance over time - empty for now
+        List<Map<String, Object>> performanceOverTime = new ArrayList<>();
         analytics.put("performanceOverTime", performanceOverTime);
         
         return analytics;

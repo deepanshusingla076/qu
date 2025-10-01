@@ -1,8 +1,8 @@
 // Direct service connections (bypassing problematic API Gateway)
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
-const AUTH_BASE_URL = process.env.REACT_APP_AUTH_URL || 'http://localhost:8083/api'; // User service
-const QUIZ_BASE_URL = process.env.REACT_APP_QUIZ_URL || 'http://localhost:8081/api'; // Question Bank service
-const RESULT_BASE_URL = process.env.REACT_APP_RESULT_URL || 'http://localhost:8082/api'; // Result service
+const AUTH_BASE_URL = process.env.REACT_APP_AUTH_URL || 'http://localhost:8081/api'; // User service
+const QUIZ_BASE_URL = process.env.REACT_APP_QUIZ_URL || 'http://localhost:8082/api'; // Question Bank service
+const RESULT_BASE_URL = process.env.REACT_APP_RESULT_URL || 'http://localhost:8083/api'; // Result service
 const ANALYTICS_BASE_URL = process.env.REACT_APP_ANALYTICS_URL || 'http://localhost:8084/api'; // Analytics service
 
 // Smart routing function that directs requests to appropriate microservices

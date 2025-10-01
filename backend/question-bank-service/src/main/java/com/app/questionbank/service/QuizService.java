@@ -133,9 +133,15 @@ public class QuizService {
         
         // Load questions for each quiz and update totalQuestions
         quizzes.forEach(quiz -> {
-            List<Question> questions = questionRepository.findByQuizId(quiz.getId());
-            quiz.setQuestions(questions);
-            quiz.setTotalQuestions(questions.size());
+            try {
+                List<Question> questions = questionRepository.findByQuizId(quiz.getId());
+                quiz.setQuestions(questions);
+                quiz.setTotalQuestions(questions.size());
+            } catch (Exception e) {
+                log.error("Error loading questions for quiz {}: {}", quiz.getId(), e.getMessage());
+                quiz.setQuestions(new ArrayList<>());
+                quiz.setTotalQuestions(0);
+            }
         });
         
         return quizzes;
