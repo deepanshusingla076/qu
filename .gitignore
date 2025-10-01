@@ -1,0 +1,29 @@
+# Node
+node_modules/
+
+# Build outputs
+**/target/
+frontend/build/
+
+# Logs
+logs/
+**/*.log
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+
+# Coverage
+coverage/
+
+# Misc
+*.local
