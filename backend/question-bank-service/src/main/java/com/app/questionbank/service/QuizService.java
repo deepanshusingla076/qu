@@ -84,31 +84,74 @@ public class QuizService {
 
     public Page<Quiz> getAllQuizzes(Pageable pageable) {
         log.debug("Fetching all quizzes with pagination");
-        Page<Quiz> quizzes = quizRepository.findAll(pageable);
-        
-        // Load questions for each quiz and update totalQuestions
-        quizzes.getContent().forEach(quiz -> {
-            List<Question> questions = questionRepository.findByQuizId(quiz.getId());
-            quiz.setQuestions(questions);
-            quiz.setTotalQuestions(questions.size());
-        });
-        
-        return quizzes;
+        try {
+            Page<Quiz> quizzes = quizRepository.findAll(pageable);
+            
+            // Don't load questions during listing to avoid performance issues
+            // Just set basic info
+            quizzes.getContent().forEach(quiz -> {
+                if (quiz.getQuestions() == null) {
+                    quiz.setQuestions(new ArrayList<>());
+                }
+                // Set totalQuestions from stored value or default to 0
+                if (quiz.getTotalQuestions() == null) {
+                    quiz.setTotalQuestions(0);
+                }
+            });
+            
+            return quizzes;
+        } catch (Exception e) {
+            log.error("Error fetching all quizzes: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to fetch quizzes: " + e.getMessage());
+        }
     }
 
+    @Transactional(readOnly = true)
     public Quiz getQuizById(Long id) {
-        log.debug("Fetching quiz by ID: {}", id);
-        Quiz quiz = quizRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Quiz not found with id: " + id));
-        
-        // Load questions explicitly
-        List<Question> questions = questionRepository.findByQuizId(quiz.getId());
-        quiz.setQuestions(questions);
-        
-        // Update totalQuestions
-        quiz.setTotalQuestions(questions.size());
-        
-        return quiz;
+        log.info("Fetching quiz by ID: {}", id);
+        try {
+            // Use a simple repository call without complex relationships
+            Quiz quiz = quizRepository.findById(id).orElse(null);
+            
+            if (quiz == null) {
+                log.warn("Quiz not found with ID: {}", id);
+                throw new RuntimeException("Quiz not found with id: " + id);
+            }
+            
+            log.info("Found quiz: {} (ID: {})", quiz.getTitle(), quiz.getId());
+            
+            // Create a new Quiz object to avoid Hibernate session issues
+            Quiz result = new Quiz();
+            result.setId(quiz.getId());
+            result.setTitle(quiz.getTitle());
+            result.setDescription(quiz.getDescription());
+            result.setTimeLimit(quiz.getTimeLimit());
+            result.setCategory(quiz.getCategory());
+            result.setDifficulty(quiz.getDifficulty());
+            result.setIsActive(quiz.getIsActive());
+            result.setCreatedBy(quiz.getCreatedBy());
+            result.setCreatedAt(quiz.getCreatedAt());
+            result.setUpdatedAt(quiz.getUpdatedAt());
+            
+            // Count questions separately
+            try {
+                List<Question> questions = questionRepository.findByQuizId(quiz.getId());
+                int questionCount = questions != null ? questions.size() : 0;
+                result.setTotalQuestions(questionCount);
+                log.info("Quiz {} has {} questions", quiz.getId(), questionCount);
+            } catch (Exception e) {
+                log.error("Error counting questions for quiz {}: {}", quiz.getId(), e.getMessage());
+                result.setTotalQuestions(0);
+            }
+            
+            return result;
+        } catch (Exception e) {
+            log.error("Error fetching quiz by ID {}: {}", id, e.getMessage(), e);
+            if (e.getMessage().contains("not found")) {
+                throw e;
+            }
+            throw new RuntimeException("Database error while fetching quiz: " + e.getMessage());
+        }
     }
 
     public List<Quiz> getQuizzesByTopic(String topic) {
@@ -129,22 +172,24 @@ public class QuizService {
 
     public List<Quiz> getQuizzesByCreatedBy(Long userId) {
         log.debug("Fetching quizzes created by user ID: {}", userId);
-        List<Quiz> quizzes = quizRepository.findByCreatedBy(userId);
-        
-        // Load questions for each quiz and update totalQuestions
-        quizzes.forEach(quiz -> {
-            try {
-                List<Question> questions = questionRepository.findByQuizId(quiz.getId());
-                quiz.setQuestions(questions);
-                quiz.setTotalQuestions(questions.size());
-            } catch (Exception e) {
-                log.error("Error loading questions for quiz {}: {}", quiz.getId(), e.getMessage());
-                quiz.setQuestions(new ArrayList<>());
-                quiz.setTotalQuestions(0);
-            }
-        });
-        
-        return quizzes;
+        try {
+            List<Quiz> quizzes = quizRepository.findByCreatedBy(userId);
+            
+            // Don't load full questions for listing, just ensure basic structure
+            quizzes.forEach(quiz -> {
+                if (quiz.getQuestions() == null) {
+                    quiz.setQuestions(new ArrayList<>());
+                }
+                if (quiz.getTotalQuestions() == null) {
+                    quiz.setTotalQuestions(0);
+                }
+            });
+            
+            return quizzes;
+        } catch (Exception e) {
+            log.error("Error fetching quizzes for user {}: {}", userId, e.getMessage(), e);
+            return new ArrayList<>();
+        }
     }
 
     public Quiz updateQuiz(Long id, Quiz updatedQuiz) {

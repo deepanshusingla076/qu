@@ -111,14 +111,27 @@ const TeacherDashboard = () => {
   const handleDeleteQuiz = async (quizId) => {
     if (window.confirm('Are you sure you want to delete this quiz? This action cannot be undone.')) {
       try {
-        await quizService.deleteQuiz(quizId);
-        setQuizzes(quizzes.filter(quiz => quiz.id !== quizId));
+        const response = await quizService.deleteQuiz(quizId);
+        
+        // Update local state immediately for better UX
+        setQuizzes(prevQuizzes => prevQuizzes.filter(quiz => quiz.id !== quizId));
         toast.success('Quiz deleted successfully');
-        // Refresh stats
+        
+        // Refresh stats to get updated counts
         fetchDashboardData();
       } catch (error) {
         console.error('Error deleting quiz:', error);
-        toast.error(`Failed to delete quiz: ${error.message || 'Unknown error'}`);
+        
+        // Provide specific error messages
+        if (error.message.includes('not found')) {
+          toast.error('Quiz not found or already deleted');
+        } else if (error.message.includes('permission')) {
+          toast.error('You do not have permission to delete this quiz');
+        } else if (error.message.includes('Cannot connect')) {
+          toast.error('Cannot connect to the server. Please check if the quiz service is running.');
+        } else {
+          toast.error(`Failed to delete quiz: ${error.message || 'Unknown error'}`);
+        }
       }
     }
   };

@@ -98,19 +98,26 @@ const QuizAiGenerate = () => {
       console.error('Error generating quiz:', error);
       
       // Provide specific error messages based on the error
-      if (error.message.includes('500')) {
+      if (error.message.includes('400') || error.message.includes('Invalid request')) {
+        toast.error('Invalid parameters for AI quiz generation. Please check your topic, difficulty, and question count settings.');
+      } else if (error.message.includes('500')) {
         toast.error('AI quiz generation is currently unavailable. This may be due to API configuration issues. Please try manual quiz creation instead.');
       } else if (error.message.includes('404')) {
         toast.error('AI quiz generation service not found. Please contact support.');
       } else if (error.message.includes('Cannot connect')) {
-        toast.error('Cannot connect to AI service. Please ensure all backend services are running.');
+        toast.error('Cannot connect to AI service. Please ensure the Question Bank service is running on port 8082.');
+      } else if (error.message.includes('disabled') || error.message.includes('API key')) {
+        toast.error('AI quiz generation is currently disabled. Please set up Gemini AI API key or try manual quiz creation.');
       } else if (error.message.includes('API')) {
         toast.error('AI service error. Please check API configuration and try different parameters.');
       } else {
         toast.error(`Failed to generate quiz: ${error.message}`);
       }
       
-      setStep(1);
+      // Redirect to dashboard after showing error
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 2000); // Give time for user to read the error message
     } finally {
       setLoading(false);
     }
@@ -454,14 +461,24 @@ const QuizAiGenerate = () => {
               <i className="fas fa-exclamation-triangle"></i>
               <h2>Quiz Generation Failed</h2>
               <p>Unable to generate quiz. Please try again with different parameters.</p>
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className="btn btn-primary"
-              >
-                <i className="fas fa-arrow-left"></i>
-                Back to Setup
-              </button>
+              <div className="form-actions">
+                <button
+                  type="button"
+                  onClick={() => setStep(1)}
+                  className="btn btn-secondary"
+                >
+                  <i className="fas fa-arrow-left"></i>
+                  Back to Setup
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate('/dashboard')}
+                  className="btn btn-primary"
+                >
+                  <i className="fas fa-home"></i>
+                  Back to Dashboard
+                </button>
+              </div>
             </div>
           </motion.div>
         )}

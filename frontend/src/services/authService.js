@@ -42,8 +42,15 @@ const fetchAPI = async (url, options = {}) => {
     
     if (!response.ok) {
       let errorData;
+      const contentType = response.headers.get('content-type');
+      
       try {
-        errorData = await response.json();
+        if (contentType && contentType.includes('application/json')) {
+          errorData = await response.json();
+        } else {
+          const textData = await response.text();
+          errorData = { message: textData || `HTTP ${response.status}: ${response.statusText}` };
+        }
       } catch (e) {
         errorData = { message: `HTTP ${response.status}: ${response.statusText}` };
       }
@@ -67,8 +74,30 @@ const fetchAPI = async (url, options = {}) => {
       throw new Error(errorData.message || `Request failed with status ${response.status}`);
     }
     
-    const data = await response.json();
-    return data;
+    // Check if response has content and is JSON
+    const contentType = response.headers.get('content-type');
+    const contentLength = response.headers.get('content-length');
+    
+    // Handle empty responses (like DELETE operations)
+    if (contentLength === '0' || !contentType) {
+      return { success: true };
+    }
+    
+    // Only try to parse JSON if content-type indicates JSON
+    if (contentType && contentType.includes('application/json')) {
+      try {
+        const data = await response.json();
+        return data;
+      } catch (e) {
+        // If JSON parsing fails but response was successful, return success indicator
+        console.warn('Response claimed to be JSON but parsing failed, treating as success');
+        return { success: true };
+      }
+    }
+    
+    // For non-JSON responses that are successful, return the text
+    const textData = await response.text();
+    return { success: true, message: textData };
   } catch (error) {
     clearTimeout(timeoutId);
     console.error('Fetch error:', error);
